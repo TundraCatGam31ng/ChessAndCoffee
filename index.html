@@ -1,1 +1,483 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chess & Coffee</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root {
+  --parchment:  #fdf6eb;
+  --parchment2: #f5e9d4;
+  --parchment3: #ecdcc0;
+  --espresso:   #2c1a0e;
+  --roast:      #4a2c1a;
+  --mocha:      #7a4a28;
+  --latte:      #b07848;
+  --caramel:    #d4954a;
+  --honey:      #e8b86d;
+  --cream:      #f9f0e0;
+  --steam:      #ede0cc;
+  --sage:       #5a7a5a;
+  --dusty-rose: #c47a7a;
+  --ink:        #1e1208;
+  --muted:      #9a7a5a;
+  --border:     #ddc9a8;
+  --border2:    #c8ae88;
+  --shadow-warm: rgba(44,26,14,0.12);
+  --shadow-deep: rgba(44,26,14,0.22);
+  --r: 16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--parchment);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+ 
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(253,246,235,0.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-logo{font-family:'Lora',serif;font-size:1.3rem;font-weight:700;color:var(--espresso);text-decoration:none;display:flex;align-items:center;gap:10px}
+.nav-logo-icon{width:34px;height:34px;background:var(--espresso);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--honey)}
+.nav-logo em{color:var(--caramel);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:.25rem}
+.nav-link{font-size:.82rem;font-weight:700;color:var(--mocha);text-decoration:none;padding:6px 14px;border-radius:99px;transition:all .18s}
+.nav-link:hover{background:var(--parchment2);color:var(--espresso)}
+.nav-link.active{background:var(--espresso);color:var(--honey)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+ 
+/* auth states in nav */
+.streak-badge{background:var(--parchment2);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:.78rem;font-weight:700;color:var(--caramel);display:flex;align-items:center;gap:5px}
+.btn-nav{font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;background:var(--espresso);color:var(--honey);border:none;border-radius:10px;padding:8px 18px;cursor:pointer;transition:all .18s;text-decoration:none;display:inline-block}
+.btn-nav:hover{background:var(--roast);transform:translateY(-1px)}
+ 
+.nav-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:99px;border:1px solid var(--border);background:var(--parchment2);transition:all .18s;text-decoration:none}
+.nav-user:hover{border-color:var(--border2)}
+.nav-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--honey)}
+.nav-avatar-fallback{width:30px;height:30px;border-radius:50%;background:var(--espresso);color:var(--honey);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0}
+.nav-username{font-size:.8rem;font-weight:700;color:var(--espresso)}
+.nav-signout{font-size:.75rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;padding:0;margin-left:2px}
+.nav-signout:hover{color:var(--mocha)}
+ 
+/* ── HERO ── */
+.hero{position:relative;z-index:1;padding:5rem 2rem 4rem;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center}
+.hero-text h1{font-family:'Lora',serif;font-size:clamp(2.2rem,5vw,3.4rem);font-weight:700;line-height:1.1;color:var(--espresso);margin-bottom:.9rem}
+.hero-text h1 em{font-style:italic;color:var(--caramel)}
+.hero-text p{font-size:1rem;color:var(--mocha);line-height:1.7;max-width:480px;margin-bottom:1.8rem}
+.hero-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-primary{font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:800;background:var(--espresso);color:var(--honey);border:none;border-radius:var(--r);padding:13px 28px;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 18px var(--shadow-deep)}
+.btn-primary:hover{background:var(--roast);transform:translateY(-2px);box-shadow:0 8px 28px var(--shadow-deep)}
+.btn-secondary{font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;background:transparent;color:var(--mocha);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 24px;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-secondary:hover{border-color:var(--mocha);color:var(--espresso);background:var(--parchment2)}
+ 
+/* hero board deco */
+.hero-board{flex-shrink:0;display:grid;grid-template-columns:repeat(5,40px);grid-template-rows:repeat(5,40px);border-radius:12px;overflow:hidden;box-shadow:0 16px 48px var(--shadow-deep);transform:rotate(6deg);opacity:.85}
+.hb-sq{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.hb-sq.l{background:#f0d9b5}.hb-sq.d{background:#b58863}
+ 
+/* ── SECTIONS ── */
+.section{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
+.section-label{font-family:'Lora',serif;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--latte);margin-bottom:.6rem}
+.section-title{font-family:'Lora',serif;font-size:1.5rem;font-weight:700;color:var(--espresso);margin-bottom:1.4rem}
+ 
+/* quick action cards */
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.quick-card{background:var(--cream);border:1.5px solid var(--border);border-radius:20px;padding:1.5rem 1.6rem;cursor:pointer;transition:all .22s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.quick-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:.06;transition:transform .3s}
+.quick-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px var(--shadow-warm)}
+.quick-card:hover::before{transform:scale(1.4)}
+.qc-espresso::before{background:var(--espresso)}.qc-sage::before{background:#5a7a5a}.qc-rose::before{background:#c47a7a}.qc-caramel::before{background:var(--caramel)}
+.qc-espresso{border-color:rgba(44,26,14,.2)}.qc-sage{border-color:rgba(90,122,90,.2)}.qc-rose{border-color:rgba(196,122,122,.2)}.qc-caramel{border-color:rgba(212,149,74,.2)}
+.qc-espresso:hover{border-color:var(--espresso)}.qc-sage:hover{border-color:#5a7a5a}.qc-rose:hover{border-color:#c47a7a}.qc-caramel:hover{border-color:var(--caramel)}
+.qc-icon{font-size:2rem;margin-bottom:.75rem;display:block}
+.qc-tag{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:2px 9px;display:inline-block;margin-bottom:.5rem}
+.tag-espresso{background:rgba(44,26,14,.08);color:var(--roast)}.tag-sage{background:rgba(90,122,90,.12);color:#5a7a5a}.tag-rose{background:rgba(196,122,122,.12);color:#c47a7a}.tag-caramel{background:rgba(212,149,74,.12);color:var(--caramel)}
+.qc-title{font-family:'Lora',serif;font-size:1.05rem;font-weight:700;color:var(--espresso);margin-bottom:4px}
+.qc-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
+.qc-arrow{position:absolute;bottom:1.25rem;right:1.4rem;font-size:1rem;color:var(--border2);transition:all .2s}
+.quick-card:hover .qc-arrow{color:var(--mocha);transform:translateX(3px)}
+ 
+/* stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.9rem;margin-bottom:2rem}
+.stat-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.4rem;position:relative;overflow:hidden}
+.stat-card::after{content:attr(data-icon);position:absolute;right:12px;bottom:8px;font-size:2rem;opacity:.08}
+.stat-val{font-family:'Lora',serif;font-size:1.8rem;font-weight:700;color:var(--espresso);line-height:1;margin-bottom:4px}
+.stat-label{font-size:.75rem;font-weight:600;color:var(--muted)}
+.stat-delta{font-size:.72rem;color:#5a7a5a;font-weight:700;margin-top:3px}
+.stat-delta.neg{color:#c47a7a}
+ 
+/* featured bot */
+.featured-bot{background:var(--espresso);border-radius:24px;padding:2rem 2.2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;position:relative;overflow:hidden}
+.featured-bot::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:var(--caramel);border-radius:50%;opacity:.08}
+.fb-portrait{width:80px;height:80px;flex-shrink:0}
+.fb-portrait svg{width:100%;height:100%;animation:bob 3s ease-in-out infinite}
+.fb-text{flex:1;min-width:180px}
+.fb-label{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--honey);opacity:.7;margin-bottom:4px}
+.fb-name{font-family:'Lora',serif;font-size:1.15rem;font-weight:700;color:var(--honey);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.fb-quip{font-size:.8rem;color:rgba(249,240,224,.65);font-style:italic;line-height:1.5}
+.btn-challenge{font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;background:var(--honey);color:var(--espresso);border:none;border-radius:12px;padding:11px 24px;cursor:pointer;transition:all .18s;white-space:nowrap;text-decoration:none}
+.btn-challenge:hover{background:var(--caramel);transform:translateY(-1px)}
+ 
+/* recap */
+.recap-card{background:var(--cream);border:1.5px solid var(--border);border-radius:20px;padding:1.5rem 1.75rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.recap-board-mini{display:grid;grid-template-columns:repeat(8,22px);grid-template-rows:repeat(8,22px);border-radius:6px;overflow:hidden;flex-shrink:0;border:2px solid var(--border2)}
+.rbs{width:22px;height:22px;font-size:.65rem;display:flex;align-items:center;justify-content:center}
+.rbs.l{background:#f0d9b5}.rbs.d{background:#b58863}
+.recap-info{flex:1;min-width:200px}
+.recap-tag{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:rgba(90,122,90,.12);color:#5a7a5a;border-radius:99px;padding:2px 9px;display:inline-block;margin-bottom:.5rem}
+.recap-result{font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--espresso);margin-bottom:4px}
+.recap-detail{font-size:.8rem;color:var(--muted);line-height:1.55;margin-bottom:.9rem}
+.recap-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.7rem;font-weight:700;border-radius:99px;padding:3px 10px}
+.chip-b{background:rgba(196,122,122,.15);color:#c47a7a}.chip-m{background:rgba(212,149,74,.15);color:var(--caramel)}.chip-ok{background:rgba(90,122,90,.12);color:#5a7a5a}
+ 
+/* guest banner */
+.guest-banner{background:linear-gradient(135deg,var(--parchment2),var(--cream));border:1.5px solid var(--border2);border-radius:20px;padding:1.5rem 1.75rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:2rem}
+.gb-icon{font-size:2rem;flex-shrink:0}
+.gb-text h3{font-family:'Lora',serif;font-size:1rem;font-weight:700;color:var(--espresso);margin-bottom:4px}
+.gb-text p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.gb-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-left:auto}
+ 
+/* divider */
+.divider{position:relative;z-index:1;max-width:1100px;margin:0 auto 3rem;padding:0 2rem;display:flex;align-items:center;gap:1rem}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-icon{font-size:1.2rem;color:var(--latte)}
+ 
+/* nav cards */
+.nav-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.nav-card{background:var(--cream);border:1.5px solid var(--border);border-radius:20px;padding:1.6rem;text-decoration:none;display:flex;flex-direction:column;gap:.5rem;transition:all .22s;position:relative;overflow:hidden;cursor:pointer}
+.nav-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px var(--shadow-warm)}
+.nc-icon{font-size:2rem}
+.nc-title{font-family:'Lora',serif;font-size:1.05rem;font-weight:700;color:var(--espresso)}
+.nc-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+.nc-links{display:flex;flex-wrap:wrap;gap:5px;margin-top:.4rem}
+.nc-link-chip{font-size:.7rem;font-weight:700;background:var(--parchment2);border:1px solid var(--border);border-radius:99px;padding:3px 10px;color:var(--mocha)}
+.nc-badge{position:absolute;top:1rem;right:1rem;font-size:.65rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--parchment3);border:1px solid var(--border2);color:var(--muted);border-radius:99px;padding:2px 8px}
+.nc-badge.new{background:rgba(90,122,90,.15);border-color:rgba(90,122,90,.3);color:#5a7a5a}
+.nav-card:hover .nc-title{color:var(--roast)}
+ 
+footer{position:relative;z-index:1;border-top:1px solid var(--border);background:var(--parchment2);padding:2rem;text-align:center;font-size:.78rem;color:var(--muted)}
+footer strong{color:var(--mocha)}
+ 
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-text{animation:fadeUp .6s ease both}
+.hero-board{animation:fadeUp .7s .1s ease both}
+ 
+@media(max-width:700px){
+  .hero{grid-template-columns:1fr;gap:2rem;padding:3rem 1.25rem 2.5rem}
+  .hero-board{display:none}
+  .section{padding:0 1.25rem 3rem}
+  .divider{padding:0 1.25rem}
+  nav{padding:0 1.25rem}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+ 
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">♟</div>
+    Chess <em>&</em> Coffee
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link active">Home</a>
+    <a href="play.html" class="nav-link">Play</a>
+    <a href="lessons.html" class="nav-link">Lessons</a>
+    <a href="analysis.html" class="nav-link">Analysis</a>
+  </div>
+  <div class="nav-right" id="nav-right">
+    <!-- filled by JS -->
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <h1 id="hero-h1">Good morning.<br>Ready to <em>brew</em><br>some moves?</h1>
+    <p id="hero-sub">Chess & Coffee is your cozy corner for learning chess — at your own pace, with opponents that adapt to you, and lessons built from your actual games.</p>
+    <div class="hero-actions">
+      <a href="play.html" class="btn-primary">♟ Play a Game</a>
+      <a href="lessons.html" class="btn-secondary">📖 My Lessons</a>
+    </div>
+  </div>
+  <div class="hero-board" id="hero-board"></div>
+</section>
+ 
+<!-- QUICK ACTIONS -->
+<section class="section">
+  <div class="section-label">Jump right in</div>
+  <div class="section-title">What would you like to do?</div>
+  <div class="quick-grid">
+    <a href="play.html?mode=adaptive" class="quick-card qc-espresso">
+      <span class="qc-icon">🤖</span><span class="qc-tag tag-espresso">Adaptive</span>
+      <div class="qc-title">Play an Adaptive Bot</div>
+      <div class="qc-desc">Your opponent adjusts to your skill level in real time — always the perfect challenge.</div>
+      <span class="qc-arrow">→</span>
+    </a>
+    <a href="lessons.html" class="quick-card qc-sage">
+      <span class="qc-icon">📖</span><span class="qc-tag tag-sage">Lessons</span>
+      <div class="qc-title">Do a Lesson</div>
+      <div class="qc-desc">Personalized lessons brewed from your recent games. Learn exactly what you need.</div>
+      <span class="qc-arrow">→</span>
+    </a>
+    <a href="play.html?mode=review" class="quick-card qc-rose">
+      <span class="qc-icon">🔍</span><span class="qc-tag tag-rose">Review</span>
+      <div class="qc-title">Review Last Match</div>
+      <div class="qc-desc">Step back through your last game, see your blunders, and find better moves.</div>
+      <span class="qc-arrow">→</span>
+    </a>
+    <a href="analysis.html" class="quick-card qc-caramel">
+      <span class="qc-icon">📊</span><span class="qc-tag tag-caramel">Analysis</span>
+      <div class="qc-title">Analysis Board</div>
+      <div class="qc-desc">Open a free board, paste a FEN or PGN, and explore any position freely.</div>
+      <span class="qc-arrow">→</span>
+    </a>
+  </div>
+</section>
+ 
+<!-- DASHBOARD -->
+<section class="section">
+  <div class="section-label">Your progress</div>
+  <div class="section-title" id="dash-title">Dashboard</div>
+ 
+  <!-- guest banner (shown when not signed in) -->
+  <div class="guest-banner" id="guest-banner" style="display:none">
+    <div class="gb-icon">☕</div>
+    <div class="gb-text">
+      <h3>Save your progress</h3>
+      <p>Sign in to track your ELO, streaks, lessons, and game history across devices.</p>
+    </div>
+    <div class="gb-actions">
+      <a href="login.html" class="btn-primary" style="font-size:.82rem;padding:10px 20px">Sign In</a>
+      <a href="login.html" class="btn-secondary" style="font-size:.82rem;padding:9px 18px">Create Account</a>
+    </div>
+  </div>
+ 
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card" data-icon="🔥"><div class="stat-val" id="stat-streak">—</div><div class="stat-label">Day Streak</div><div class="stat-delta" id="stat-streak-d"></div></div>
+    <div class="stat-card" data-icon="⭐"><div class="stat-val" id="stat-elo">—</div><div class="stat-label">Current ELO</div><div class="stat-delta"></div></div>
+    <div class="stat-card" data-icon="♟"><div class="stat-val" id="stat-games">—</div><div class="stat-label">Games Played</div><div class="stat-delta"></div></div>
+    <div class="stat-card" data-icon="📖"><div class="stat-val" id="stat-lessons">—</div><div class="stat-label">Lessons Done</div><div class="stat-delta"></div></div>
+  </div>
+ 
+  <!-- Featured bot -->
+  <div class="featured-bot">
+    <div class="fb-portrait">
+      <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="95" rx="28" ry="18" fill="#2ec4b6"/>
+        <rect x="32" y="72" width="36" height="28" rx="6" fill="#2ec4b6"/>
+        <rect x="44" y="62" width="12" height="14" rx="4" fill="#e8d5c0"/>
+        <ellipse cx="50" cy="52" rx="26" ry="28" fill="#e8d5c0"/>
+        <ellipse cx="50" cy="28" rx="26" ry="12" fill="#555"/>
+        <path d="M24 34 Q22 44 25 52" stroke="#555" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M76 34 Q78 44 75 52" stroke="#555" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M36 36 L40 36 L40 33 L44 33" stroke="#2ec4b6" stroke-width="1.2" fill="none"/>
+        <path d="M56 36 L60 36 L60 33 L64 33" stroke="#2ec4b6" stroke-width="1.2" fill="none"/>
+        <circle cx="40" cy="33" r="1.5" fill="#2ec4b6"/><circle cx="60" cy="33" r="1.5" fill="#2ec4b6"/>
+        <ellipse cx="38" cy="50" rx="6" ry="6" fill="white"/><ellipse cx="62" cy="50" rx="6" ry="6" fill="white"/>
+        <ellipse cx="38.5" cy="51" rx="4" ry="4" fill="#0d7a74"/><ellipse cx="62.5" cy="51" rx="4" ry="4" fill="#0d7a74"/>
+        <circle cx="39" cy="49.5" r="1.2" fill="white"/><circle cx="63" cy="49.5" r="1.2" fill="white"/>
+        <circle cx="38.5" cy="51" r="3.5" fill="none" stroke="#2ec4b6" stroke-width=".8"/>
+        <circle cx="62.5" cy="51" r="3.5" fill="none" stroke="#2ec4b6" stroke-width=".8"/>
+        <path d="M41 63 Q50 70 59 63" stroke="#808080" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M43 65 Q50 68 57 65" stroke="white" stroke-width="1.2" fill="none"/>
+      </svg>
+    </div>
+    <div class="fb-text">
+      <div class="fb-label">Today's Challenge</div>
+      <div class="fb-name">Aria 🌐 <span style="font-size:.75rem;opacity:.6;font-family:'Nunito',sans-serif;font-weight:600">Adaptive</span></div>
+      <div class="fb-quip" id="fb-quip">"I've calibrated to your style. Let's see how much you've improved."</div>
+    </div>
+    <a href="play.html?bot=adaptive" class="btn-challenge">Challenge Aria →</a>
+  </div>
+ 
+  <!-- Last match recap -->
+  <div class="recap-card">
+    <div class="recap-board-mini" id="recap-board"></div>
+    <div class="recap-info">
+      <span class="recap-tag">Last Match</span>
+      <div class="recap-result">Loss vs Roast · 26 moves · 5 min</div>
+      <div class="recap-detail">You played the Italian Opening. A blunder on move 14 cost you a rook. Your lessons cover exactly this.</div>
+      <div class="recap-chips">
+        <span class="chip chip-b">⚠ 1 blunder</span>
+        <span class="chip chip-m">! 2 mistakes</span>
+        <span class="chip chip-ok">✓ 18 good moves</span>
+      </div>
+    </div>
+    <a href="play.html?mode=review" class="btn-secondary" style="white-space:nowrap">Review →</a>
+  </div>
+</section>
+ 
+<div class="divider"><div class="divider-line"></div><div class="divider-icon">☕</div><div class="divider-line"></div></div>
+ 
+<!-- SITE MAP -->
+<section class="section">
+  <div class="section-label">Explore</div>
+  <div class="section-title">Everything on Chess & Coffee</div>
+  <div class="nav-cards">
+    <a href="play.html" class="nav-card">
+      <div class="nc-icon">♟</div><div class="nc-title">Play</div>
+      <div class="nc-desc">Challenge a bot, play a friend offline, or jump into online matchmaking.</div>
+      <div class="nc-links"><span class="nc-link-chip">🤖 Play a Bot</span><span class="nc-link-chip">🌐 Play Online</span><span class="nc-link-chip">🪑 Play Offline</span></div>
+    </a>
+    <a href="lessons.html" class="nav-card">
+      <div class="nc-badge new">New lessons</div>
+      <div class="nc-icon">📖</div><div class="nc-title">Lessons</div>
+      <div class="nc-desc">Your personalized learning path — lessons built from your own games and mistakes.</div>
+      <div class="nc-links"><span class="nc-link-chip">🗺 Learning Path</span><span class="nc-link-chip">📝 Drills</span></div>
+    </a>
+    <a href="analysis.html" class="nav-card">
+      <div class="nc-icon">📊</div><div class="nc-title">Analysis Board</div>
+      <div class="nc-desc">A free board to explore any position. Paste a FEN, load a PGN, or set up pieces.</div>
+      <div class="nc-links"><span class="nc-link-chip">🔬 Engine Analysis</span><span class="nc-link-chip">📂 Load PGN</span></div>
+    </a>
+    <a href="tournaments.html" class="nav-card" style="opacity:.6;pointer-events:none">
+      <div class="nc-badge">Coming soon</div>
+      <div class="nc-icon">🏆</div><div class="nc-title">Tournaments</div>
+      <div class="nc-desc">Weekly tournaments, daily puzzles, and leaderboards.</div>
+      <div class="nc-links"><span class="nc-link-chip">📅 Weekly Cup</span><span class="nc-link-chip">🧩 Daily Puzzle</span></div>
+    </a>
+    <a href="profile.html" class="nav-card" style="opacity:.6;pointer-events:none">
+      <div class="nc-badge">Coming soon</div>
+      <div class="nc-icon">👤</div><div class="nc-title">Profile</div>
+      <div class="nc-desc">Your full game history, ELO graph, and achievements.</div>
+      <div class="nc-links"><span class="nc-link-chip">📈 ELO Graph</span><span class="nc-link-chip">🎖 Achievements</span></div>
+    </a>
+    <a href="settings.html" class="nav-card" style="opacity:.6;pointer-events:none">
+      <div class="nc-badge">Coming soon</div>
+      <div class="nc-icon">⚙️</div><div class="nc-title">Settings</div>
+      <div class="nc-desc">Board themes, piece sets, sound, and preferences.</div>
+      <div class="nc-links"><span class="nc-link-chip">🎨 Board Theme</span><span class="nc-link-chip">🔔 Notifications</span></div>
+    </a>
+  </div>
+</section>
+ 
+<footer>
+  <p><strong>Chess & Coffee</strong> — A cozy place to learn chess ☕</p>
+  <p style="margin-top:6px">Built with ♟ and a lot of espresso</p>
+</footer>
+ 
+<script>
+const CLIENT_ID = '795448693057-hgavcos1adgatpr83hu0bspfciejcn5l.apps.googleusercontent.com';
+ 
+// ── Auth helpers ──
+function getUser(){try{return JSON.parse(localStorage.getItem('cnc_user'));}catch{return null;}}
+function clearUser(){localStorage.removeItem('cnc_user');google.accounts.id.disableAutoSelect();}
+ 
+// ── Nav: render signed-in or signed-out state ──
+function renderNav(){
+  const nr=document.getElementById('nav-right');
+  const user=getUser();
+  if(user){
+    const initials=(user.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    nr.innerHTML=`
+      <div class="streak-badge">🔥 ${user.streak||0} streak</div>
+      <a href="profile.html" class="nav-user">
+        ${user.avatar
+          ? `<img class="nav-avatar" src="${user.avatar}" alt="${user.name}" onerror="this.style.display='none'">`
+          : `<div class="nav-avatar-fallback">${initials}</div>`
+        }
+        <span class="nav-username">${(user.name||'').split(' ')[0]}</span>
+      </a>
+      <button class="nav-signout" onclick="signOut()">Sign out</button>
+    `;
+  } else {
+    nr.innerHTML=`
+      <a href="login.html" class="btn-secondary" style="font-size:.8rem;padding:7px 16px">Sign In</a>
+      <a href="login.html" class="btn-nav">Sign Up Free</a>
+    `;
+  }
+}
+ 
+// ── Dashboard: show stats or guest banner ──
+function renderDashboard(){
+  const user=getUser();
+  const guestBanner=document.getElementById('guest-banner');
+  if(!user){
+    guestBanner.style.display='flex';
+    document.getElementById('stat-streak').textContent='—';
+    document.getElementById('stat-elo').textContent='—';
+    document.getElementById('stat-games').textContent='—';
+    document.getElementById('stat-lessons').textContent='—';
+    document.getElementById('fb-quip').textContent='"I\'ve calibrated to your style. Sign in to track your progress."';
+  } else {
+    guestBanner.style.display='none';
+    document.getElementById('stat-streak').textContent=user.streak||0;
+    document.getElementById('stat-streak-d').textContent=user.streak>0?'↑ Keep it up!':'Start your streak today!';
+    document.getElementById('stat-elo').textContent=user.elo||500;
+    document.getElementById('stat-games').textContent=user.gamesPlayed||0;
+    document.getElementById('stat-lessons').textContent=user.lessonsCompleted||0;
+    document.getElementById('dash-title').textContent='Welcome back, '+(user.name?.split(' ')[0]||'friend')+' ☕';
+  }
+}
+ 
+function signOut(){
+  clearUser();
+  renderNav();
+  renderDashboard();
+}
+ 
+// ── Hero greeting ──
+function setGreeting(){
+  const h=new Date().getHours();
+  const g=h<12?'Good morning.':h<17?'Good afternoon.':'Good evening.';
+  document.getElementById('hero-h1').innerHTML=`${g}<br>Ready to <em>brew</em><br>some moves?`;
+}
+ 
+// ── Mini hero board ──
+function buildHeroBoard(){
+  const el=document.getElementById('hero-board');
+  const layout=['bR','bN','bB','bQ','bK',null,'bP','bP','bP','bP',null,null,null,null,null,null,'wP',null,null,null,null,null,'wN',null,'wP'];
+  const G={wK:'♔',wQ:'♕',wR:'♖',wB:'♗',wN:'♘',wP:'♙',bK:'♚',bQ:'♛',bR:'♜',bB:'♝',bN:'♞',bP:'♟'};
+  layout.forEach((p,i)=>{const sq=document.createElement('div');const r=Math.floor(i/5),c=i%5;sq.className='hb-sq '+((r+c)%2===0?'l':'d');if(p)sq.textContent=G[p]||'';el.appendChild(sq);});
+}
+ 
+// ── Mini recap board ──
+function buildRecapBoard(){
+  const rb=document.getElementById('recap-board');
+  const sp={0:'♜',1:'♞',2:'♝',3:'♛',4:'♚',5:'♝',6:'♞',7:'♜',8:'♟',9:'♟',10:'♟',11:'♟',12:'♟',13:'♟',14:'♟',15:'♟',48:'♙',49:'♙',50:'♙',51:'♙',52:'♙',53:'♙',54:'♙',55:'♙',56:'♖',57:'♘',58:'♗',59:'♕',60:'♔',61:'♗',62:'♘',63:'♖'};
+  for(let i=0;i<64;i++){const sq=document.createElement('div');const r=Math.floor(i/8),c=i%8;sq.className='rbs '+((r+c)%2===0?'l':'d');if(sp[i])sq.textContent=sp[i];rb.appendChild(sq);}
+}
+ 
+// ── Google One Tap (silent, for auto sign-in returning users) ──
+window.addEventListener('load',()=>{
+  renderNav();
+  renderDashboard();
+  setGreeting();
+  buildHeroBoard();
+  buildRecapBoard();
+ 
+  // init Google ID — silent auto-select for returning users
+  if(typeof google!=='undefined'){
+    google.accounts.id.initialize({
+      client_id: CLIENT_ID,
+      callback: handleGoogleReturn,
+      auto_select: true,
+      cancel_on_tap_outside: true,
+    });
+    // Only prompt if not already signed in
+    if(!getUser()) google.accounts.id.prompt();
+  }
+});
+ 
+function handleGoogleReturn(response){
+  try{
+    const payload=JSON.parse(atob(response.credential.split('.')[1]));
+    const existing=getUser();
+    if(!existing||existing.email!==payload.email){
+      const user={
+        name:payload.name,email:payload.email,avatar:payload.picture,
+        provider:'google',joinedAt:existing?.joinedAt||new Date().toISOString(),
+        elo:existing?.elo||500,streak:existing?.streak||0,
+        gamesPlayed:existing?.gamesPlayed||0,lessonsCompleted:existing?.lessonsCompleted||0,
+      };
+      localStorage.setItem('cnc_user',JSON.stringify(user));
+    }
+    renderNav();renderDashboard();
+  }catch(e){}
+}
+</script>
+</body>
+</html>
+ 
