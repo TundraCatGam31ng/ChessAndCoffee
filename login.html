@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Chess & Coffee</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root {
+  --parchment:  #fdf6eb;
+  --parchment2: #f5e9d4;
+  --parchment3: #ecdcc0;
+  --espresso:   #2c1a0e;
+  --roast:      #4a2c1a;
+  --mocha:      #7a4a28;
+  --latte:      #b07848;
+  --caramel:    #d4954a;
+  --honey:      #e8b86d;
+  --cream:      #f9f0e0;
+  --border:     #ddc9a8;
+  --border2:    #c8ae88;
+  --muted:      #9a7a5a;
+  --shadow-warm: rgba(44,26,14,0.12);
+  --shadow-deep: rgba(44,26,14,0.25);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--parchment);
+  color: var(--espresso);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+ 
+/* background board pattern */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(var(--parchment3) 0% 25%, transparent 0% 50%);
+  background-size: 80px 80px;
+  opacity: .18;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, var(--parchment) 30%, transparent 80%);
+  z-index: 0;
+}
+ 
+.login-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+ 
+/* logo */
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6rem;
+  text-decoration: none;
+}
+.login-logo-icon {
+  width: 64px; height: 64px;
+  background: var(--espresso);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem;
+  color: var(--honey);
+  box-shadow: 0 8px 28px var(--shadow-deep);
+}
+.login-logo-name {
+  font-family: 'Lora', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--espresso);
+}
+.login-logo-name em { color: var(--caramel); font-style: normal; }
+ 
+/* card */
+.login-card {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  padding: 2.5rem 2.25rem;
+  width: 100%;
+  box-shadow: 0 16px 48px var(--shadow-warm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+ 
+.login-heading {
+  text-align: center;
+}
+.login-heading h1 {
+  font-family: 'Lora', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--espresso);
+  margin-bottom: 6px;
+}
+.login-heading p {
+  font-size: .85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+ 
+/* google button */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 20px;
+  background: white;
+  border: 1.5px solid var(--border2);
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--espresso);
+  cursor: pointer;
+  transition: all .18s;
+  box-shadow: 0 2px 8px var(--shadow-warm);
+  text-decoration: none;
+}
+.google-btn:hover {
+  border-color: var(--mocha);
+  box-shadow: 0 4px 16px var(--shadow-warm);
+  transform: translateY(-1px);
+}
+.google-logo {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+}
+ 
+.divider-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  width: 100%;
+}
+.divider-row span { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+.divider-row::before, .divider-row::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+ 
+/* email form */
+.email-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.field-label {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--mocha);
+  margin-bottom: 3px;
+  display: block;
+}
+.field-input {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--parchment);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .88rem;
+  color: var(--espresso);
+  outline: none;
+  transition: border-color .15s;
+}
+.field-input:focus { border-color: var(--caramel); }
+.field-input::placeholder { color: var(--muted); }
+ 
+.btn-email {
+  width: 100%;
+  padding: 13px;
+  background: var(--espresso);
+  color: var(--honey);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .18s;
+  margin-top: .25rem;
+}
+.btn-email:hover { background: var(--roast); transform: translateY(-1px); }
+ 
+.toggle-mode {
+  font-size: .8rem;
+  color: var(--muted);
+  text-align: center;
+}
+.toggle-mode a {
+  color: var(--caramel);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+.toggle-mode a:hover { text-decoration: underline; }
+ 
+/* terms */
+.terms {
+  font-size: .72rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+}
+.terms a { color: var(--caramel); text-decoration: none; }
+.terms a:hover { text-decoration: underline; }
+ 
+/* status message */
+.status-msg {
+  font-size: .82rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  width: 100%;
+  text-align: center;
+  display: none;
+}
+.status-msg.error { background: rgba(196,122,122,.12); color: #a04040; border: 1px solid rgba(196,122,122,.25); display: block; }
+.status-msg.success { background: rgba(90,122,90,.12); color: #3a6a3a; border: 1px solid rgba(90,122,90,.25); display: block; }
+ 
+/* already signed in */
+.signed-in-card {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+.signed-in-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 3px solid var(--honey);
+  object-fit: cover;
+}
+.signed-in-name {
+  font-family: 'Lora', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--espresso);
+}
+.signed-in-email { font-size: .8rem; color: var(--muted); margin-top: -8px; }
+.btn-continue {
+  padding: 12px 32px;
+  background: var(--espresso);
+  color: var(--honey);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .18s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-continue:hover { background: var(--roast); }
+.btn-signout {
+  font-size: .78rem;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  text-decoration: underline;
+}
+.btn-signout:hover { color: var(--mocha); }
+ 
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.login-wrap { animation: fadeUp .5s ease both; }
+</style>
+</head>
+<body>
+ 
+<div class="login-wrap">
+  <a href="index.html" class="login-logo">
+    <div class="login-logo-icon">♟</div>
+    <div class="login-logo-name">Chess <em>&</em> Coffee</div>
+  </a>
+ 
+  <!-- Already signed in state -->
+  <div class="login-card" id="signed-in-card" style="display:none">
+    <div class="signed-in-card" id="signed-in-inner" style="display:flex">
+      <img class="signed-in-avatar" id="si-avatar" src="" alt="avatar">
+      <div class="signed-in-name" id="si-name">Welcome back!</div>
+      <div class="signed-in-email" id="si-email"></div>
+      <a href="index.html" class="btn-continue">Continue to Chess & Coffee →</a>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+ 
+  <!-- Sign in card -->
+  <div class="login-card" id="login-card">
+    <div class="login-heading">
+      <h1>Welcome back ☕</h1>
+      <p>Sign in to save your progress, track your ELO, and brew better chess.</p>
+    </div>
+ 
+    <!-- Google button -->
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+ 
+    <div class="divider-row"><span>or sign in with email</span></div>
+ 
+    <!-- Email form -->
+    <div class="email-form" id="email-form">
+      <div>
+        <label class="field-label" for="email-input">Email address</label>
+        <input class="field-input" type="email" id="email-input" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div id="password-field">
+        <label class="field-label" for="pw-input">Password</label>
+        <input class="field-input" type="password" id="pw-input" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div id="name-field" style="display:none">
+        <label class="field-label" for="name-input">Your name</label>
+        <input class="field-input" type="text" id="name-input" placeholder="What should we call you?">
+      </div>
+      <div class="status-msg" id="status-msg"></div>
+      <button class="btn-email" id="submit-btn" onclick="handleEmailAuth()">Sign In →</button>
+      <div class="toggle-mode" id="toggle-mode">
+        No account? <a onclick="toggleMode()">Create one free</a>
+      </div>
+    </div>
+ 
+    <div class="terms">
+      By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+    </div>
+  </div>
+</div>
+ 
+<script>
+const CLIENT_ID = '795448693057-hgavcos1adgatpr83hu0bspfciejcn5l.apps.googleusercontent.com';
+let isSignUp = false;
+ 
+// ── Check if already signed in ──
+window.addEventListener('load', () => {
+  const user = getUser();
+  if (user) showSignedIn(user);
+});
+ 
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('cnc_user')); } catch { return null; }
+}
+function saveUser(u) { localStorage.setItem('cnc_user', JSON.stringify(u)); }
+function clearUser() { localStorage.removeItem('cnc_user'); }
+ 
+// ── Google Sign-In ──
+function signInWithGoogle() {
+  // Use Google Identity Services popup
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'openid email profile',
+    callback: () => {},
+  });
+ 
+  // Use One Tap / ID token flow instead
+  google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: true,
+  });
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      // Fallback: render button
+      google.accounts.id.renderButton(
+        document.getElementById('google-fallback') || createFallbackDiv(),
+        { theme: 'outline', size: 'large', width: 360 }
+      );
+    }
+  });
+}
+ 
+function createFallbackDiv() {
+  const d = document.createElement('div');
+  d.id = 'google-fallback';
+  d.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;background:white;padding:1rem;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.2)';
+  document.body.appendChild(d);
+  return d;
+}
+ 
+function handleGoogleCredential(response) {
+  // Decode JWT payload (no verification needed client-side — just for display)
+  try {
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const user = {
+      name: payload.name,
+      email: payload.email,
+      avatar: payload.picture,
+      provider: 'google',
+      joinedAt: new Date().toISOString(),
+      elo: 500,
+      streak: 0,
+      gamesPlayed: 0,
+      lessonsCompleted: 0,
+    };
+    saveUser(user);
+    showStatus('Signed in! Redirecting…', 'success');
+    setTimeout(() => { window.location.href = 'index.html'; }, 900);
+  } catch (e) {
+    showStatus('Something went wrong. Please try again.', 'error');
+  }
+}
+ 
+// ── Email auth (client-side only — no real backend) ──
+function handleEmailAuth() {
+  const email = document.getElementById('email-input').value.trim();
+  const pw = document.getElementById('pw-input').value;
+  const name = document.getElementById('name-input').value.trim();
+ 
+  if (!email || !email.includes('@')) { showStatus('Please enter a valid email.', 'error'); return; }
+  if (!pw || pw.length < 6) { showStatus('Password must be at least 6 characters.', 'error'); return; }
+ 
+  if (isSignUp) {
+    if (!name) { showStatus('Please enter your name.', 'error'); return; }
+    // Check if already exists
+    const existing = JSON.parse(localStorage.getItem('cnc_accounts') || '[]');
+    if (existing.find(a => a.email === email)) { showStatus('An account with that email already exists.', 'error'); return; }
+    const user = {
+      name, email,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2c1a0e&color=e8b86d&rounded=true`,
+      provider: 'email',
+      joinedAt: new Date().toISOString(),
+      elo: 500, streak: 0, gamesPlayed: 0, lessonsCompleted: 0,
+      // store hashed-ish pw (this is NOT secure — for a real app use a backend)
+      _pwKey: btoa(email + pw),
+    };
+    existing.push(user);
+    localStorage.setItem('cnc_accounts', JSON.stringify(existing));
+    saveUser(user);
+    showStatus('Account created! Welcome to Chess & Coffee ☕', 'success');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+  } else {
+    const accounts = JSON.parse(localStorage.getItem('cnc_accounts') || '[]');
+    const match = accounts.find(a => a.email === email && a._pwKey === btoa(email + pw));
+    if (!match) { showStatus('Email or password incorrect.', 'error'); return; }
+    saveUser(match);
+    showStatus('Welcome back! Redirecting…', 'success');
+    setTimeout(() => { window.location.href = 'index.html'; }, 900);
+  }
+}
+ 
+function toggleMode() {
+  isSignUp = !isSignUp;
+  document.getElementById('name-field').style.display = isSignUp ? '' : 'none';
+  document.getElementById('submit-btn').textContent = isSignUp ? 'Create Account →' : 'Sign In →';
+  document.getElementById('toggle-mode').innerHTML = isSignUp
+    ? 'Already have an account? <a onclick="toggleMode()">Sign in</a>'
+    : 'No account? <a onclick="toggleMode()">Create one free</a>';
+  document.querySelector('.login-heading h1').textContent = isSignUp ? 'Create an account ☕' : 'Welcome back ☕';
+  clearStatus();
+}
+ 
+function showStatus(msg, type) {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.className = 'status-msg ' + type;
+}
+function clearStatus() {
+  const el = document.getElementById('status-msg');
+  el.className = 'status-msg';
+  el.textContent = '';
+}
+ 
+function showSignedIn(user) {
+  document.getElementById('login-card').style.display = 'none';
+  const card = document.getElementById('signed-in-card');
+  card.style.display = '';
+  document.getElementById('si-name').textContent = 'Welcome back, ' + (user.name?.split(' ')[0] || 'friend') + '!';
+  document.getElementById('si-email').textContent = user.email || '';
+  const av = document.getElementById('si-avatar');
+  if (user.avatar) { av.src = user.avatar; av.style.display = ''; }
+  else av.style.display = 'none';
+}
+ 
+function signOut() {
+  clearUser();
+  google.accounts.id.disableAutoSelect();
+  location.reload();
+}
+ 
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleEmailAuth();
+});
+</script>
+</body>
+</html>
